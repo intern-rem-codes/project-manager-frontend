@@ -28,7 +28,7 @@ function appendFiles(projectId: string, uploaded: UploadedFile[]) {
 export default function ProjectDetailPage() {
   const navigate = useNavigate();
   const { id: projectId } = useParams();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [project, setProject] = useState<Project | undefined>(undefined);
   const [error, setError] = useState<string>("");
   const [uploadError, setUploadError] = useState<string>("");
@@ -42,31 +42,46 @@ export default function ProjectDetailPage() {
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"));
   }, [projectId]);
 
-  function handleEditProject() {
-    navigate(`/project/${projectId}/edit`);
-  }
-
-  function handleFileSelect(file: File) {
-    setSelectedFile(file);
-  }
-
-  async function handleSubmit() {
-    if (!projectId || !selectedFile) return;
+  async function uploadSelectedFiles() {
+    if (!projectId || !selectedFiles || selectedFiles.length === 0) return true;
     setUploadError("");
     setIsUploading(true);
     try {
       const body = new FormData();
-      body.append("files", selectedFile);
+      for (let i = 0; i < selectedFiles.length; i++) {
+        body.append("files", selectedFiles[i]);
+      }
       const result = await fetch("/api/files/upload", { method: "POST", body });
-      if (!result.ok) throw new Error("Upload mislukt");
+      if (!result.ok) {
+        let message = "Upload mislukt";
+        try {
+          const data = (await result.json()) as { message?: string };
+          if (data?.message) message = data.message;
+        } catch {
+          // ignore invalid JSON
+        }
+        throw new Error(message);
+      }
       const uploaded = (await result.json()) as UploadedFile[];
       appendFiles(projectId, uploaded);
-      setSelectedFile(null);
+      setSelectedFiles(null);
+      return true;
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : "Upload mislukt");
+      return false;
     } finally {
       setIsUploading(false);
     }
+  }
+
+  function handleFileSelect(files: FileList) {
+    setSelectedFiles(files);
+  }
+
+  async function handleEditProject() {
+    if (!projectId) return;
+    const ok = await uploadSelectedFiles();
+    if (ok) navigate(`/project/${projectId}/edit`);
   }
 
   if (error) return <div>{error}</div>;
@@ -93,16 +108,20 @@ export default function ProjectDetailPage() {
           <strong>Aangemaakt:</strong> {project.createdAt}
         </p>
 
-        <button onClick={handleEditProject}>Project bewerken</button>
+        <button onClick={handleEditProject} disabled={isUploading}>
+          {isUploading ? "Bezig..." : "Project bewerken"}
+        </button>
       </div>
       <div className="project-files">
         <h2>Bestanden</h2>
-        <p>Hier komen de bestanden van het project te staan.</p>
-        <FileUpload onFileSelect={handleFileSelect} />
+        <p>Selecteer bestanden en klik op Project bewerken om te uploaden.</p>
+        <FileUpload onFileSelect={handleFileSelect} multiple={true} />
+        {selectedFiles && selectedFiles.length > 0 && (
+          <p className="file-count">
+            {selectedFiles.length} bestand(en) geselecteerd
+          </p>
+        )}
         {uploadError ? <p className="error">{uploadError}</p> : null}
-        <button onClick={handleSubmit} disabled={!selectedFile || isUploading}>
-          {isUploading ? "Bezig..." : "Bestand uploaden"}
-        </button>
         <ProjectFiles />
       </div>
     </div>

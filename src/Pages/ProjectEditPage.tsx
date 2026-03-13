@@ -17,7 +17,7 @@ export default function ProjectEditPage() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [uploadError, setUploadError] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
 
@@ -55,12 +55,14 @@ export default function ProjectEditPage() {
   }
 
   async function handleUploadFile() {
-    if (!projectId || !selectedFile) return;
+    if (!projectId || !selectedFiles || selectedFiles.length === 0) return;
     setUploadError("");
     setIsUploading(true);
     try {
       const body = new FormData();
-      body.append("files", selectedFile);
+      for (let i = 0; i < selectedFiles.length; i++) {
+        body.append("files", selectedFiles[i]);
+      }
       const result = await fetch("/api/files/upload", { method: "POST", body });
       if (!result.ok) throw new Error("Upload mislukt");
       const uploaded = (await result.json()) as Array<{
@@ -76,7 +78,7 @@ export default function ProjectEditPage() {
       window.dispatchEvent(
         new CustomEvent("project-files-updated", { detail: { projectId } }),
       );
-      setSelectedFile(null);
+      setSelectedFiles(null);
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Upload mislukt");
     } finally {
@@ -84,8 +86,8 @@ export default function ProjectEditPage() {
     }
   };
 
-  function handleFileSelect(file: File): void {
-    setSelectedFile(file);
+  function handleFileSelect(files: FileList): void {
+    setSelectedFiles(files);
   }
 
   if (pageError) return <div>{pageError}</div>;
@@ -93,8 +95,11 @@ export default function ProjectEditPage() {
   if (!project) return <div>Loading...</div>;
 
   return (
-    <div className="project-detail-page">
-      <h1>Project bewerken</h1>
+    <div className="project-edit-page">
+      <div className="project-edit-header">
+        <h1>Project bewerken</h1>
+        <p>Pas details aan en sla wijzigingen op.</p>
+      </div>
 
       <form className="project-edit-card" onSubmit={handleSave}>
         <div className="form-group">
@@ -154,14 +159,13 @@ export default function ProjectEditPage() {
       </form>
       <div className="file-upload-section">
         <h2>Bestanden uploaden</h2>
-        <FileUpload onFileSelect={handleFileSelect} />
+        <FileUpload onFileSelect={handleFileSelect} multiple={true} />
+        {selectedFiles && selectedFiles.length > 0 && (
+          <p className="file-count">
+            {selectedFiles.length} bestand(en) geselecteerd
+          </p>
+        )}
         {uploadError ? <p className="error">{uploadError}</p> : null}
-        <button
-          onClick={handleUploadFile}
-          disabled={!selectedFile || isUploading}
-        >
-          {isUploading ? "Bezig..." : "Bestand uploaden"}
-        </button>
         <ProjectFiles />
       </div>
     </div>
