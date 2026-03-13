@@ -1,0 +1,283 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+
+  .App {
+    min-height: 100vh;
+  }
+
+  .title {
+    text-align: center;
+    margin: 0 0 12px;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .content p {
+    margin: 0;
+  }
+
+  .login-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 360px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .geenaccount {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+  }
+  .geenaccount a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  .geenaccount a:hover {
+    text-decoration: underline;
+  }
+  .register-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  .register-card {
+    width: 100%;
+    max-width: 360px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+  .register-card .form-group {
+    margin-bottom: 15px;
+  }
+  .register-card label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .register-card input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  .register-card button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  .register-card button:hover {
+    background-color: #0056b3;
+  }
+  .error {
+    color: red;
+    margin-bottom: 10px;
+  }
+  .dashboard-page {
+    padding: 24px;
+  }
+  .demoproject {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+  }
+  .projectbutton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  .projectbutton:hover {
+    background-color: #0056b3;
+  }
+  .project-detail-page{
+    padding: 24px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #fff;
+    max-width: 600px;
+    margin: 20px auto;
+  }
+   .project-detail-page h1 {
+    margin-top: 0;
+    text-align: center;
+  }
+   .project-detail-page p {
+    margin-bottom: 20px;
+  }
+   .project-detail-page button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+   .project-detail-page button:hover {
+    background-color: #0056b3;  
+  }
+  .project-detail-card{
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 400px;
+    margin: 20px auto;
+  }
+   .project-detail-card h1 {
+    margin-top: 0;
+    text-align: center;
+  }
+   .project-detail-card p {
+    margin-bottom: 20px;
+  }
+   .project-detail-card button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+   .project-detail-card button:hover {
+    background-color: #0056b3;  
+  }
+.project-edit-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 400px;
+    margin: 20px auto;
+  }
+   .project-edit-card .form-group {
+    margin-bottom: 15px;
+  }
+   .project-edit-card label {
+    display: block;
+    margin-bottom: 5px;
+  }
+   .project-edit-card input,
+   .project-edit-card textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+   .project-edit-card button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+  }
+   .project-edit-card button:hover {
+    background-color: #0056b3;
+  }
+.project-files {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 400px;
+    margin: 20px auto;
+  }
+   .project-files h2 {
+    margin-top: 0;
+    text-align: center;
+  }
+   .project-files p {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+   .project-files button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+  }
+   .project-files button:hover {
+    background-color: #0056b3;  
+  }
+  .file-upload-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 400px;
+    margin: 20px auto;
+  }
+   .file-upload-section h2 {
+    margin-top: 0;
+    text-align: center;
+  }
+   .file-upload-section p {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+   .file-upload-section button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+  }
+   .file-upload-section button:hover {
+    background-color: #0056b3;  
+  }
