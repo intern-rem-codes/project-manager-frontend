@@ -31,12 +31,12 @@ export function RegisterPage() {
               });
               if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Registration failed");
+                throw new Error(errorData.message || "Registratie mislukt");
               }
               navigate("/login");
             } catch (error: unknown) {
               setError(
-                error instanceof Error ? error.message : "Registration failed",
+                error instanceof Error ? error.message : "Registratie mislukt",
               );
             } finally {
               setLoading(false);
@@ -62,7 +62,7 @@ export function RegisterPage() {
             />
           </div>
           <div className="form-group">
-            <label>Password:</label>
+            <label>Wachtwoord:</label>
             <input
               type="password"
               value={password}
@@ -72,7 +72,7 @@ export function RegisterPage() {
           </div>
           {error && <p className="error">{error}</p>}
           <button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Bezig met registreren..." : "Registreren"}
           </button>
           <p className="geenaccount">
             Heb je al een account? <a href="/login">Log hier in</a>

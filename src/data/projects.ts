@@ -23,7 +23,7 @@ const STORAGE_KEY = "projects";
 const defaultProjects: Record<string, MockProject> = {
   "1": {
     id: "1",
-    name: "Demo Project",
+    name: "Demo-project",
     description: "Dit is een demo project voor jouw project manager.",
     status: "In uitvoering",
     deadline: "2026-03-31",

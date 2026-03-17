@@ -35,10 +35,6 @@ export default function AddNewProject() {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadError, setUploadError] = useState<string>("");
 
-  function handleFileSelect(files: FileList) {
-    setSelectedFiles(files);
-  }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");

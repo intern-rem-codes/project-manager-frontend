@@ -17,18 +17,12 @@ export default function ProjectEditPage() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [uploadError, setUploadError] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    if (!projectId) {
-      setPageError("Project id ontbreekt.");
-      return;
-    }
-    setPageError("");
+    if (!projectId) return;
     fetchProject(projectId)
       .then((p) => {
+        setPageError("");
         setProject(p);
         setName(p.name);
         setDescription(p.description);
@@ -36,7 +30,7 @@ export default function ProjectEditPage() {
         setDeadline(p.deadline ?? "");
       })
       .catch((e) =>
-        setPageError(e instanceof Error ? e.message : "Failed to load"),
+        setPageError(e instanceof Error ? e.message : "Laden mislukt"),
       );
   }, [projectId]);
 
@@ -49,52 +43,14 @@ export default function ProjectEditPage() {
       navigate(`/project/${projectId}`);
     } catch (error) {
       setPageError(
-        error instanceof Error ? error.message : "Failed to update project",
+        error instanceof Error ? error.message : "Project bijwerken mislukt",
       );
     }
-  }
-
-  async function handleUploadFile() {
-    if (!projectId || !selectedFiles || selectedFiles.length === 0) return;
-    setUploadError("");
-    setIsUploading(true);
-    try {
-      const body = new FormData();
-      for (let i = 0; i < selectedFiles.length; i++) {
-        body.append("files", selectedFiles[i]);
-      }
-      const result = await fetch("/api/files/upload", { method: "POST", body });
-      if (!result.ok) throw new Error("Upload mislukt");
-      const uploaded = (await result.json()) as Array<{
-        id: string;
-        name: string;
-        url: string;
-      }>;
-      const key = `project-files:${projectId}`;
-      const raw = localStorage.getItem(key);
-      const current = raw ? (JSON.parse(raw) as typeof uploaded) : [];
-      const next = Array.isArray(current)
-        ? [...current, ...uploaded]
-        : uploaded;
-      localStorage.setItem(key, JSON.stringify(next));
-      window.dispatchEvent(
-        new CustomEvent("project-files-updated", { detail: { projectId } }),
-      );
-      setSelectedFiles(null);
-    } catch (error) {
-      setUploadError(error instanceof Error ? error.message : "Upload mislukt");
-    } finally {
-      setIsUploading(false);
-    }
-  }
-
-  function handleFileSelect(files: FileList): void {
-    setSelectedFiles(files);
   }
 
   if (pageError) return <div>{pageError}</div>;
   if (!projectId) return <div>Project id ontbreekt.</div>;
-  if (!project) return <div>Loading...</div>;
+  if (!project) return <div>Laden...</div>;
 
   return (
     <div className="project-edit-page">
@@ -162,12 +118,6 @@ export default function ProjectEditPage() {
       <div className="file-upload-section">
         <h2>Bestanden uploaden</h2>
         <FileUpload />
-        {selectedFiles && selectedFiles.length > 0 && (
-          <p className="file-count">
-            {selectedFiles.length} bestand(en) geselecteerd
-          </p>
-        )}
-        {uploadError ? <p className="error">{uploadError}</p> : null}
         <ProjectFiles />
       </div>
     </div>

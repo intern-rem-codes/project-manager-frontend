@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router";
 
 export default function AdminPage({ userRole }: { userRole: string }) {
@@ -16,23 +15,23 @@ export default function AdminPage({ userRole }: { userRole: string }) {
     if (userRole === "admin") {
       return (
         <div className="admin-page">
-          <h1>Admin Page</h1>
-          <p>Welcome to the admin page!</p>
-          <p>This is the admin dashboard.</p>
-          <button onClick={handleLogout}>Logout</button>
+          <h1>Adminpagina</h1>
+          <p>Welkom op de adminpagina!</p>
+          <p>Dit is het admin-dashboard.</p>
+          <button onClick={handleLogout}>Uitloggen</button>
         </div>
       );
     } else if (userRole === "client") {
       return (
         <div className="client-page">
-          <h1>Client Page</h1>
-          <p>Welcome to the client page!</p>
-          <p>This is the client dashboard.</p>
-          <button onClick={handleLogout}>Logout</button>
+          <h1>Klantpagina</h1>
+          <p>Welkom op de klantpagina!</p>
+          <p>Dit is het klant-dashboard.</p>
+          <button onClick={handleLogout}>Uitloggen</button>
         </div>
       );
     } else {
-      return <div>Unknown user role.</div>;
+      return <div>Onbekende gebruikersrol.</div>;
     }
   };
 

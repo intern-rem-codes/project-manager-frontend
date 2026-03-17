@@ -40,7 +40,7 @@ export default function ProjectDetailPage() {
     fetchProject(projectId)
       .then(setProject)
       .catch((e) =>
-        setError(e instanceof Error ? e.message : "Failed to load"),
+        setError(e instanceof Error ? e.message : "Laden mislukt"),
       );
   }, [projectId]);
 
@@ -76,10 +76,6 @@ export default function ProjectDetailPage() {
     }
   }
 
-  function handleFileSelect(files: FileList) {
-    setSelectedFiles(files);
-  }
-
   async function handleEditProject() {
     if (!projectId) return;
     const ok = await uploadSelectedFiles();
@@ -87,11 +83,11 @@ export default function ProjectDetailPage() {
   }
 
   if (error) return <div>{error}</div>;
-  if (!project) return <div>Loading...</div>;
+  if (!project) return <div>Laden...</div>;
 
   return (
     <div className="project-detail-page">
-      <h1>Project details</h1>
+      <h1>Projectdetails</h1>
 
       <div className="project-detail-card">
         <p>

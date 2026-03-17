@@ -38,7 +38,7 @@ export async function uploadFile(file: File, projectId: string, user: string) {
   });
 
   if (!response.ok) {
-    let message = "Upload failed";
+    let message = "Upload mislukt";
     try {
       const data = (await response.json()) as { message?: string };
       if (data?.message) message = data.message;

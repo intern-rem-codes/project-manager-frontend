@@ -2,7 +2,6 @@ import type { Project } from "../Interfaces/Project";
 import {
   createProject as createLocalProject,
   getProjectById as getLocalProjectById,
-  listProjects as listLocalProjects,
   saveProject as saveLocalProject,
   type MockProject,
 } from "../data/projects";
@@ -24,10 +23,13 @@ function toProject(local: MockProject): Project {
 export async function fetchProject(projectId: string): Promise<Project> {
   try {
     const result = await fetch(`${baseUrl}/projects/${projectId}`);
-    if (!result.ok) throw new Error("Failed to fetch project details");
+    if (!result.ok) throw new Error("Projectdetails ophalen mislukt");
     return (await result.json()) as Project;
   } catch (error) {
-    console.warn("API unavailable, falling back to local project data.", error);
+    console.warn(
+      "API niet beschikbaar, terugvallen op lokale projectdata.",
+      error,
+    );
     return toProject(getLocalProjectById(projectId));
   }
 }
@@ -35,10 +37,9 @@ export async function fetchProject(projectId: string): Promise<Project> {
 export async function fetchProjects(): Promise<Project[]> {
   try {
     const result = await fetch(`${baseUrl}/projects`);
-    if (!result.ok) throw new Error("Failed to fetch projects");
+    if (!result.ok) throw new Error("Projecten ophalen mislukt");
     return (await result.json()) as Project[];
-  } catch (error) {
-    // console.warn("API unavailable, falling back to local project data.", error);
+  } catch {
     return [];
   }
 }
@@ -55,10 +56,13 @@ export async function createProject(input: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
     });
-    if (!result.ok) throw new Error("Failed to create project");
+    if (!result.ok) throw new Error("Project aanmaken mislukt");
     return (await result.json()) as Project;
   } catch (error) {
-    console.warn("API unavailable, falling back to local project data.", error);
+    console.warn(
+      "API niet beschikbaar, terugvallen op lokale projectdata.",
+      error,
+    );
     return toProject(
       createLocalProject({
         name: input.name,
@@ -85,10 +89,13 @@ export async function updateProject(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
     });
-    if (!result.ok) throw new Error("Failed to update project");
+    if (!result.ok) throw new Error("Project bijwerken mislukt");
     return (await result.json()) as Project;
   } catch (error) {
-    console.warn("API unavailable, falling back to local project data.", error);
+    console.warn(
+      "API niet beschikbaar, terugvallen op lokale projectdata.",
+      error,
+    );
     const existing = getLocalProjectById(projectId);
     saveLocalProject({
       ...existing,

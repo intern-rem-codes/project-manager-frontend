@@ -35,7 +35,7 @@ export function LoginPage() {
       </div>
 
       <div className="login-card">
-        <h1>Login</h1>
+        <h1>Inloggen</h1>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -51,11 +51,13 @@ export function LoginPage() {
               });
               if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Login failed");
+                throw new Error(errorData.message || "Inloggen mislukt");
               }
               navigate("/dashboard");
             } catch (error: unknown) {
-              setError(error instanceof Error ? error.message : "Login failed");
+              setError(
+                error instanceof Error ? error.message : "Inloggen mislukt",
+              );
             } finally {
               setLoading(false);
             }
@@ -71,7 +73,7 @@ export function LoginPage() {
             />
           </div>
           <div className="form-group">
-            <label>Password:</label>
+            <label>Wachtwoord:</label>
             <input
               type="password"
               value={password}
@@ -82,7 +84,7 @@ export function LoginPage() {
 
           {error && <div className="error">{error}</div>}
           <button type="submit" disabled={loading} onClick={handleLogin}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Bezig met inloggen..." : "Inloggen"}
           </button>
           <p className="geenaccount" onClick={() => navigate("/register")}>
             Nog geen account? <a href="/register">Registreer hier</a>

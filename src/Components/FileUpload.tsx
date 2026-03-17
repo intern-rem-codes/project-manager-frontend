@@ -1,17 +1,11 @@
-import { useState } from "react";
+import type { ChangeEvent } from "react";
 import { uploadFile } from "../api/fileupload.api";
 
 export default function FileUpload() {
-  const [file, setFile] = useState<File | null>(null);
-
-  const handleUpload = async (
-    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
-  ) => {
+  const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ?? [];
     const file = files[0];
-    console.log(file);
     if (!file) {
-      console.log("no file found");
       return;
     }
 
