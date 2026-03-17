@@ -7,4 +7,3 @@ export type Project = {
   createdAt: string;
   updatedAt: string;
 };
-

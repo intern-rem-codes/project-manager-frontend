@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { FileUpload } from "../Components/FileUpload";
+import FileUpload from "../Components/FileUpload";
 import ProjectFiles from "../Components/ProjectFiles";
 import { fetchProject } from "../api/project.api";
 import type { Project } from "../Interfaces/Project";
@@ -39,7 +39,9 @@ export default function ProjectDetailPage() {
     setError("");
     fetchProject(projectId)
       .then(setProject)
-      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"));
+      .catch((e) =>
+        setError(e instanceof Error ? e.message : "Failed to load"),
+      );
   }, [projectId]);
 
   async function uploadSelectedFiles() {
@@ -115,7 +117,7 @@ export default function ProjectDetailPage() {
       <div className="project-files">
         <h2>Bestanden</h2>
         <p>Selecteer bestanden en klik op Project bewerken om te uploaden.</p>
-        <FileUpload onFileSelect={handleFileSelect} multiple={true} />
+        <FileUpload />
         {selectedFiles && selectedFiles.length > 0 && (
           <p className="file-count">
             {selectedFiles.length} bestand(en) geselecteerd
@@ -123,7 +125,13 @@ export default function ProjectDetailPage() {
         )}
         {uploadError ? <p className="error">{uploadError}</p> : null}
         <ProjectFiles />
+        <button onClick={handleEditProject} disabled={isUploading}>
+          {isUploading ? "Bezig..." : "Project bewerken"}
+        </button>
       </div>
+      <button onClick={() => navigate("/dashboard")}>
+        Terug naar dashboard
+      </button>
     </div>
   );
 }

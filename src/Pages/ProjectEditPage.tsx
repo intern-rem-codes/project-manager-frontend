@@ -1,10 +1,10 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { FileUpload } from "../Components/FileUpload";
 import ProjectFiles from "../Components/ProjectFiles";
 import { fetchProject, updateProject } from "../api/project.api";
 import type { Project } from "../Interfaces/Project";
+import FileUpload from "../Components/FileUpload";
 
 export default function ProjectEditPage() {
   const navigate = useNavigate();
@@ -73,7 +73,9 @@ export default function ProjectEditPage() {
       const key = `project-files:${projectId}`;
       const raw = localStorage.getItem(key);
       const current = raw ? (JSON.parse(raw) as typeof uploaded) : [];
-      const next = Array.isArray(current) ? [...current, ...uploaded] : uploaded;
+      const next = Array.isArray(current)
+        ? [...current, ...uploaded]
+        : uploaded;
       localStorage.setItem(key, JSON.stringify(next));
       window.dispatchEvent(
         new CustomEvent("project-files-updated", { detail: { projectId } }),
@@ -84,7 +86,7 @@ export default function ProjectEditPage() {
     } finally {
       setIsUploading(false);
     }
-  };
+  }
 
   function handleFileSelect(files: FileList): void {
     setSelectedFiles(files);
@@ -159,7 +161,7 @@ export default function ProjectEditPage() {
       </form>
       <div className="file-upload-section">
         <h2>Bestanden uploaden</h2>
-        <FileUpload onFileSelect={handleFileSelect} multiple={true} />
+        <FileUpload />
         {selectedFiles && selectedFiles.length > 0 && (
           <p className="file-count">
             {selectedFiles.length} bestand(en) geselecteerd

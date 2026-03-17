@@ -7,6 +7,8 @@ import {
   type MockProject,
 } from "../data/projects";
 
+const baseUrl = "http://localhost:3000";
+
 function toProject(local: MockProject): Project {
   return {
     id: local.id,
@@ -21,7 +23,7 @@ function toProject(local: MockProject): Project {
 
 export async function fetchProject(projectId: string): Promise<Project> {
   try {
-    const result = await fetch(`/api/projects/${projectId}`);
+    const result = await fetch(`${baseUrl}/projects/${projectId}`);
     if (!result.ok) throw new Error("Failed to fetch project details");
     return (await result.json()) as Project;
   } catch (error) {
@@ -32,12 +34,12 @@ export async function fetchProject(projectId: string): Promise<Project> {
 
 export async function fetchProjects(): Promise<Project[]> {
   try {
-    const result = await fetch(`/api/projects`);
+    const result = await fetch(`${baseUrl}/projects`);
     if (!result.ok) throw new Error("Failed to fetch projects");
     return (await result.json()) as Project[];
   } catch (error) {
-    console.warn("API unavailable, falling back to local project data.", error);
-    return listLocalProjects().map(toProject);
+    // console.warn("API unavailable, falling back to local project data.", error);
+    return [];
   }
 }
 
@@ -48,7 +50,7 @@ export async function createProject(input: {
   deadline: string;
 }): Promise<Project> {
   try {
-    const result = await fetch(`/api/projects`, {
+    const result = await fetch(`${baseUrl}/projects`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
@@ -78,7 +80,7 @@ export async function updateProject(
   },
 ): Promise<Project> {
   try {
-    const result = await fetch(`/api/projects/${projectId}`, {
+    const result = await fetch(`${baseUrl}/projects/${projectId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),

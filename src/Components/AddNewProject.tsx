@@ -2,7 +2,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { createProject } from "../api/project.api";
-import { FileUpload } from "./FileUpload";
+import FileUpload from "../Components/FileUpload";
 
 type UploadedFile = {
   id: string;
@@ -56,7 +56,10 @@ export default function AddNewProject() {
         for (let i = 0; i < selectedFiles.length; i++) {
           body.append("files", selectedFiles[i]);
         }
-        const result = await fetch("/api/files/upload", { method: "POST", body });
+        const result = await fetch("/api/files/upload", {
+          method: "POST",
+          body,
+        });
         if (result.ok) {
           const uploaded = (await result.json()) as UploadedFile[];
           appendFiles(project.id, uploaded);
@@ -144,7 +147,7 @@ export default function AddNewProject() {
         <h2>Bestanden toevoegen</h2>
         <p>Optioneel: voeg alvast bestanden toe voor dit project.</p>
         <div className="file-upload-box">
-          <FileUpload onFileSelect={handleFileSelect} multiple={true} />
+          <FileUpload />
           {selectedFiles && selectedFiles.length > 0 && (
             <p className="file-count">
               {selectedFiles.length} bestand(en) geselecteerd

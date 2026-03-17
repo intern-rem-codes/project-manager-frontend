@@ -11,7 +11,13 @@ export function LoginPage() {
   function handleLogin() {
     localStorage.setItem("username", email);
     localStorage.setItem("password", password);
-    navigate("/");
+    navigate("/dashboard"); // Navigate to the dashboard page after successful login
+
+    // Determine the user role based on the email or any other criteria
+    const userRole = email === "admin@example.com" ? "admin" : "client"; // Replace this with your actual user role determination logic
+
+    // Set the user role in the local storage
+    localStorage.setItem("userRole", userRole);
   }
 
   return (
