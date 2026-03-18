@@ -1,10 +1,8 @@
-import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import ProjectFiles from "../Components/ProjectFiles";
-import { fetchProject, updateProject } from "../api/project.api";
+import { fetchProject, updateProject } from "../api/projects.api";
 import type { Project } from "../Interfaces/Project";
-import FileUpload from "../Components/FileUpload";
+import { formatDateOnly } from "../api/helpers";
 
 export default function ProjectEditPage() {
   const navigate = useNavigate();
@@ -19,23 +17,19 @@ export default function ProjectEditPage() {
   const [deadline, setDeadline] = useState("");
 
   useEffect(() => {
-    if (!projectId) return;
-    fetchProject(projectId)
-      .then((p) => {
-        setPageError("");
-        setProject(p);
-        setName(p.name);
-        setDescription(p.description);
-        setStatus(p.status);
-        setDeadline(p.deadline ?? "");
-      })
-      .catch((e) =>
-        setPageError(e instanceof Error ? e.message : "Laden mislukt"),
-      );
+    fetchProject(projectId).then((project) => {
+      if (!project) {
+        return;
+      }
+      setName(project.name);
+      setDescription(project.description);
+      setStatus(project.status);
+      setDeadline(project.deadline ?? "");
+      setProject(project);
+    });
   }, [projectId]);
 
-  async function handleSave(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSave() {
     if (!projectId) return;
 
     try {
@@ -59,7 +53,7 @@ export default function ProjectEditPage() {
         <p>Pas details aan en sla wijzigingen op.</p>
       </div>
 
-      <form className="project-edit-card" onSubmit={handleSave}>
+      <form className="project-edit-card">
         <div className="form-group">
           <label>Naam project:</label>
           <input
@@ -102,11 +96,15 @@ export default function ProjectEditPage() {
 
         <div className="form-group">
           <label>Aangemaakt:</label>
-          <input type="date" value={project.createdAt} disabled />
+          <input
+            type="date"
+            value={formatDateOnly(project.created_at)}
+            disabled
+          />
         </div>
 
         <div className="project-edit-actions">
-          <button type="submit">Opslaan</button>
+          <button onClick={handleSave}>Opslaan</button>
           <button
             type="button"
             onClick={() => navigate(`/project/${projectId}`)}
@@ -115,11 +113,6 @@ export default function ProjectEditPage() {
           </button>
         </div>
       </form>
-      <div className="file-upload-section">
-        <h2>Bestanden uploaden</h2>
-        <FileUpload />
-        <ProjectFiles />
-      </div>
     </div>
   );
 }

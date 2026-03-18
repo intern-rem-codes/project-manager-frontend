@@ -1,28 +1,6 @@
-import type { FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { createProject } from "../api/project.api";
-import FileUpload from "../Components/FileUpload";
-
-type UploadedFile = {
-  id: string;
-  name: string;
-  url: string;
-};
-
-function storageKey(projectId: string) {
-  return `project-files:${projectId}`;
-}
-
-function appendFiles(projectId: string, uploaded: UploadedFile[]) {
-  const raw = localStorage.getItem(storageKey(projectId));
-  const current = raw ? (JSON.parse(raw) as UploadedFile[]) : [];
-  const next = Array.isArray(current) ? [...current, ...uploaded] : uploaded;
-  localStorage.setItem(storageKey(projectId), JSON.stringify(next));
-  window.dispatchEvent(
-    new CustomEvent("project-files-updated", { detail: { projectId } }),
-  );
-}
+import { createProject } from "../api/projects.api";
 
 export default function AddNewProject() {
   const navigate = useNavigate();
@@ -30,51 +8,25 @@ export default function AddNewProject() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [error, setError] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
-  const [uploadError, setUploadError] = useState<string>("");
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSubmit() {
     setError("");
     setIsSaving(true);
-    try {
-      const project = await createProject({
-        name,
-        description,
-        status,
-        deadline,
-      });
+    const project = await createProject({
+      name,
+      description,
+      status,
+      deadline,
+    });
 
-      if (selectedFiles && selectedFiles.length > 0) {
-        const body = new FormData();
-        for (let i = 0; i < selectedFiles.length; i++) {
-          body.append("files", selectedFiles[i]);
-        }
-        const result = await fetch("/api/files/upload", {
-          method: "POST",
-          body,
-        });
-        if (result.ok) {
-          const uploaded = (await result.json()) as UploadedFile[];
-          appendFiles(project.id, uploaded);
-          setSelectedFiles(null);
-          setUploadError("");
-        } else {
-          setUploadError("Upload mislukt");
-        }
-      }
-      navigate(`/project/${project.id}`);
-    } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : "Project aanmaken mislukt. Staat de backend aan?",
-      );
-    } finally {
-      setIsSaving(false);
+    if (!project) {
+      setError("Project aanmaken mislukt");
+      return;
     }
+
+    navigate(`/project/${project.id}`);
   }
 
   return (
@@ -85,11 +37,7 @@ export default function AddNewProject() {
       </div>
       {error ? <p className="error">{error}</p> : null}
 
-      <form
-        id="add-project-form"
-        className="project-edit-card"
-        onSubmit={handleSubmit}
-      >
+      <form id="add-project-form" className="project-edit-card">
         <div className="form-group">
           <label>Naam project:</label>
           <input
@@ -130,7 +78,7 @@ export default function AddNewProject() {
         </div>
 
         <div className="project-edit-actions">
-          <button type="submit" disabled={isSaving}>
+          <button onClick={handleSubmit} disabled={isSaving}>
             {isSaving ? "Bezig..." : "Aanmaken"}
           </button>
           <button type="button" onClick={() => navigate("/dashboard")}>
@@ -138,20 +86,6 @@ export default function AddNewProject() {
           </button>
         </div>
       </form>
-
-      <div className="project-upload-card">
-        <h2>Bestanden toevoegen</h2>
-        <p>Optioneel: voeg alvast bestanden toe voor dit project.</p>
-        <div className="file-upload-box">
-          <FileUpload />
-          {selectedFiles && selectedFiles.length > 0 && (
-            <p className="file-count">
-              {selectedFiles.length} bestand(en) geselecteerd
-            </p>
-          )}
-        </div>
-        {uploadError ? <p className="error">{uploadError}</p> : null}
-      </div>
     </div>
   );
 }

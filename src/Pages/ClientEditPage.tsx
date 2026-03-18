@@ -1,29 +1,13 @@
-import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { createClient, fetchClient, updateClient } from "../api/client.api";
+import { createClient, fetchClient, updateClient } from "../api/clients.api";
 import type { Client } from "../Interfaces/Client";
-
-function parseDateOnly(value: string): Date | undefined {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  return Number.isNaN(date.getTime()) ? undefined : date;
-}
-
-function formatDateOnly(value?: Date): string {
-  if (!value) return "";
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+import { formatDateOnly } from "../api/helpers";
 
 export default function ClientEditPage() {
   const navigate = useNavigate();
   const params = useParams();
   const clientId = params.id;
-  const isCreateMode = useMemo(() => !clientId, [clientId]);
 
   const [client, setClient] = useState<Client | undefined>(undefined);
   const [pageError, setPageError] = useState<string>("");
@@ -38,58 +22,66 @@ export default function ClientEditPage() {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
+  const [isCreateMode, setIsCreateMode] = useState(false);
 
   useEffect(() => {
-    if (isCreateMode) return;
-    if (!clientId) return;
-
-    setPageError("");
-    fetchClient(clientId)
-      .then((c) => {
-        setClient(c);
-        setFirstName(c.firstName);
-        setLastName(c.lastName);
-        setEmail(c.email);
-        setPhone(c.phone ?? "");
-        setDateOfBirth(formatDateOnly(c.dateOfBirth));
-        setStreet(c.street ?? "");
-        setCity(c.city ?? "");
-        setPostalCode(c.postalCode ?? "");
-        setCountry(c.country ?? "");
+    fetchClient(clientId || "")
+      .then((client) => {
+        if (!client) {
+          setIsCreateMode(true);
+          return;
+        }
+        setClient(client);
+        setFirstName(client.firstName);
+        setLastName(client.lastName);
+        setEmail(client.email);
+        setPhone(client.phone ?? "");
+        setDateOfBirth(formatDateOnly(client.dateOfBirth));
+        setStreet(client.street ?? "");
+        setCity(client.city ?? "");
+        setPostalCode(client.postalCode ?? "");
+        setCountry(client.country ?? "");
       })
-      .catch((e) =>
-        setPageError(e instanceof Error ? e.message : "Laden mislukt"),
+      .catch((client) =>
+        setPageError(
+          client instanceof Error ? client.message : "Laden mislukt",
+        ),
       );
   }, [clientId, isCreateMode]);
 
-  async function handleSave(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setPageError("");
-    setIsSaving(true);
-
-    const input: Omit<Client, "id"> = {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.trim(),
-      phone: phone.trim() ? phone.trim() : undefined,
-      dateOfBirth: dateOfBirth ? parseDateOnly(dateOfBirth) : undefined,
-      street: street.trim() ? street.trim() : undefined,
-      city: city.trim() ? city.trim() : undefined,
-      postalCode: postalCode.trim() ? postalCode.trim() : undefined,
-      country: country.trim() ? country.trim() : undefined,
-    };
-
+  console.log(isCreateMode);
+  async function handleSave() {
     try {
       if (isCreateMode) {
-        const created = await createClient(input);
-        navigate(`/client/${created.id}`);
-      } else if (clientId) {
-        await updateClient(clientId, input);
-        navigate(`/client/${clientId}`);
+        await createClient({
+          firstName,
+          lastName,
+          email,
+          phone,
+          dateOfBirth: new Date(dateOfBirth),
+          street,
+          city,
+          postalCode,
+          country,
+        });
+      } else {
+        if (!clientId) return;
+        await updateClient(clientId, {
+          firstName,
+          lastName,
+          email,
+          phone,
+          dateOfBirth: new Date(dateOfBirth),
+          street,
+          city,
+          postalCode,
+          country,
+        });
       }
+      navigate(`/client/${clientId}`);
     } catch (error) {
       setPageError(
-        error instanceof Error ? error.message : "Klant opslaan mislukt",
+        error instanceof Error ? error.message : "Project bijwerken mislukt",
       );
     } finally {
       setIsSaving(false);
@@ -106,7 +98,7 @@ export default function ClientEditPage() {
         <p>Vul de gegevens in en sla op.</p>
       </div>
 
-      <form className="client-edit-card" onSubmit={handleSave}>
+      <div className="client-edit-card">
         <div className="form-group">
           <label>Voornaam:</label>
           <input
@@ -192,7 +184,7 @@ export default function ClientEditPage() {
         </div>
 
         <div className="client-edit-actions">
-          <button type="submit" disabled={isSaving}>
+          <button onClick={handleSave} disabled={isSaving}>
             {isSaving ? "Bezig..." : "Opslaan"}
           </button>
           <button
@@ -206,7 +198,7 @@ export default function ClientEditPage() {
             Annuleren
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -4,6 +4,6 @@ export type Project = {
   description: string;
   status: string;
   deadline: string | null;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { fetchClients } from "../api/client.api";
-import { fetchProjects } from "../api/project.api";
+import { fetchClients } from "../api/clients.api";
+import { fetchProjects } from "../api/projects.api";
 import type { Client } from "../Interfaces/Client";
 import type { Project } from "../Interfaces/Project";
 

@@ -1,5 +1,5 @@
 export type Client = {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -10,4 +10,3 @@ export type Client = {
   postalCode?: string;
   country?: string;
 };
-
