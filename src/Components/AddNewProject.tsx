@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { createProject } from "../api/projects.api";
+import { fetchClients } from "../api/clients.api";
+import type { Client } from "../Interfaces/Client";
 
 export default function AddNewProject() {
   const navigate = useNavigate();
@@ -8,8 +10,18 @@ export default function AddNewProject() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [clients, setClients] = useState<Client[]>([]);
+  const [clientId, setClientId] = useState("");
   const [error, setError] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    fetchClients()
+      .then((fetchedClients) => {
+        setClients(fetchedClients ?? []);
+      })
+      .catch((e) => setError(e instanceof Error ? e.message : "Laden mislukt"));
+  }, []);
 
   async function handleSubmit() {
     setError("");
@@ -19,13 +31,12 @@ export default function AddNewProject() {
       description,
       status,
       deadline,
+      clientId,
     });
-
     if (!project) {
       setError("Project aanmaken mislukt");
       return;
     }
-
     navigate(`/project/${project.id}`);
   }
 
@@ -75,6 +86,21 @@ export default function AddNewProject() {
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
+        </div>
+
+        <div className="form-group">
+          <label>Client:</label>
+          <select
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+          >
+            <option value="">Selecteer een client</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.firstName} {client.lastName}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="project-edit-actions">

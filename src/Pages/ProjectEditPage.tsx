@@ -29,7 +29,8 @@ export default function ProjectEditPage() {
     });
   }, [projectId]);
 
-  async function handleSave() {
+  async function handleSave(event: React.FormEvent) {
+    event.preventDefault(); // Voorkom de standaardgedraging van het formulier (paginavernieuwing)
     if (!projectId) return;
 
     try {
@@ -53,7 +54,7 @@ export default function ProjectEditPage() {
         <p>Pas details aan en sla wijzigingen op.</p>
       </div>
 
-      <form className="project-edit-card">
+      <form className="project-edit-card" onSubmit={handleSave}>
         <div className="form-group">
           <label>Naam project:</label>
           <input
@@ -104,7 +105,7 @@ export default function ProjectEditPage() {
         </div>
 
         <div className="project-edit-actions">
-          <button onClick={handleSave}>Opslaan</button>
+          <button type="submit">Opslaan</button>
           <button
             type="button"
             onClick={() => navigate(`/project/${projectId}`)}

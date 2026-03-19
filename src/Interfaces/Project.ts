@@ -6,4 +6,5 @@ export type Project = {
   deadline: string | null;
   created_at: string;
   updated_at: string;
+  clientId: string;
 };

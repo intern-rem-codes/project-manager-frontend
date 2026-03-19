@@ -60,6 +60,7 @@ export default function DashboardPage() {
       </div>
 
       <section className="dashboard-section">
+        <h2>Projecten</h2>
         {error ? <p className="error">{error}</p> : null}
         {projects ? (
           <div className="project-list">

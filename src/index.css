@@ -457,3 +457,41 @@ button:disabled {
     width: 100%;
   }
 }
+
+
+.dropdown {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  margin-top: 4px;
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background: #f3f4f6;
+}
+
+.option.active {
+  background: #2563eb;
+  color: white;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.chip svg {
+  cursor: pointer;
+}

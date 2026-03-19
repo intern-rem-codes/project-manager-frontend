@@ -30,6 +30,7 @@ export async function createProject(input: {
   description: string;
   status: string;
   deadline: string;
+  clientId: string;
 }): Promise<Project | undefined> {
   return await postData(`${baseUrl}/projects`, input);
 }

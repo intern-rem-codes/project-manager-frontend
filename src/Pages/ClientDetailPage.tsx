@@ -5,7 +5,6 @@ import type { Client } from "../Interfaces/Client";
 
 export default function ClientDetailPage() {
   const navigate = useNavigate();
-
   const { id: clientId } = useParams();
   const [client, setClient] = useState<Client | undefined>(undefined);
   const [error, setError] = useState<string>("");
