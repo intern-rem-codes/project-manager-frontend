@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { fetchProject } from "../api/projects.api";
+import { deleteProject, fetchProject } from "../api/projects.api";
 import type { Project } from "../Interfaces/Project";
 import { fetchClient } from "../api/clients.api";
 import type { Client } from "../Interfaces/Client";
@@ -30,6 +30,24 @@ export default function ProjectDetailPage() {
       .catch((e) => setError(e instanceof Error ? e.message : "Laden mislukt"));
   }, [projectId]);
 
+  async function handleDelete() {
+    if (!projectId) return;
+
+    const confirmed = window.confirm(
+      "Weet je zeker dat je dit project wilt verwijderen?",
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteProject(projectId);
+      navigate("/dashboard");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Verwijderen mislukt");
+    }
+  }
+
+  if (!projectId) return <div>Project id ontbreekt.</div>;
+
   if (error) return <div>{error}</div>;
   if (!project) return <div>Laden...</div>;
 
@@ -58,6 +76,9 @@ export default function ProjectDetailPage() {
 
         <button onClick={() => navigate(`/project/${projectId}/edit`)}>
           Project bewerken
+        </button>
+        <button onClick={handleDelete} className="button-delete">
+          Project verwijderen
         </button>
       </div>
 

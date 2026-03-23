@@ -1,6 +1,6 @@
 import type { Project } from "../Interfaces/Project";
 import { baseUrl } from "../utils/constants";
-import { getData, postData, putData } from "./helpers";
+import { deleteData, getData, postData, putData } from "./helpers";
 
 // FETCH SINGLE PROJECT
 export async function fetchProject(
@@ -46,4 +46,11 @@ export async function updateProject(
   },
 ): Promise<Project | undefined> {
   return await putData(`${baseUrl}/projects/${projectId}`, input);
+}
+
+// DELETE PROJECT
+export async function deleteProject(
+  projectId: string,
+): Promise<Project | undefined> {
+  return await deleteData<Project>(`${baseUrl}/projects/${projectId}`);
 }

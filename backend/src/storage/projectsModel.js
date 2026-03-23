@@ -2,7 +2,7 @@ function todayIsoDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function createProject({ name, description, status, deadline }) {
+export function createProject({ name, description, status, deadline, clientId }) {
   const now = new Date().toISOString();
   const createdAt = todayIsoDate();
   return {
@@ -11,6 +11,7 @@ export function createProject({ name, description, status, deadline }) {
     description,
     status,
     deadline: deadline ?? null,
+    clientId: clientId ?? null,
     createdAt,
     updatedAt: now,
   };

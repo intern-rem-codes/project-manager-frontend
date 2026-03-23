@@ -17,16 +17,18 @@ export default function ProjectEditPage() {
   const [deadline, setDeadline] = useState("");
 
   useEffect(() => {
-    fetchProject(projectId).then((project) => {
-      if (!project) {
-        return;
-      }
-      setName(project.name);
-      setDescription(project.description);
-      setStatus(project.status);
-      setDeadline(project.deadline ?? "");
-      setProject(project);
-    });
+    if (projectId) {
+      fetchProject(projectId).then((project) => {
+        if (!project) {
+          return;
+        }
+        setName(project.name);
+        setDescription(project.description);
+        setStatus(project.status);
+        setDeadline(project.deadline ?? "");
+        setProject(project);
+      });
+    }
   }, [projectId]);
 
   async function handleSave(event: React.FormEvent) {

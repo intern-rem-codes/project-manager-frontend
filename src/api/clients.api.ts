@@ -1,6 +1,6 @@
 import type { Client } from "../Interfaces/Client";
 import { baseUrl } from "../utils/constants";
-import { getData, postData, putData } from "./helpers";
+import { getData, postData, putData, deleteData } from "./helpers";
 
 // FETCH SINGLE PROJECT
 export async function fetchClient(
@@ -55,4 +55,11 @@ export async function updateClient(
   },
 ): Promise<Client | undefined> {
   return await putData(`${baseUrl}/clients/${clientId}`, input);
+}
+
+// DELETE CLIENT
+export async function deleteClient(
+  clientId: string,
+): Promise<Client | undefined> {
+  return await deleteData<Client>(`${baseUrl}/clients/${clientId}`);
 }

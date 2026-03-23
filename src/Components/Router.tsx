@@ -8,12 +8,14 @@ import ProjectEditPage from "../Pages/ProjectEditPage";
 import { RegisterPage } from "../Pages/RegisterPage";
 import AddNewProject from "./AddNewProject";
 
+import AddNewClient from "./AddNewClient";
+
 export function Router() {
   return (
     <Routes>
       <Route path="/" element={<DashboardPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/client/new" element={<ClientEditPage />} />
+      <Route path="/client/new" element={<AddNewClient />} />
       <Route path="/client/:id" element={<ClientDetailPage />} />
       <Route path="/client/:id/edit" element={<ClientEditPage />} />
       <Route path="/add-project" element={<AddNewProject />} />
