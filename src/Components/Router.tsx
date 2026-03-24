@@ -9,20 +9,95 @@ import { RegisterPage } from "../Pages/RegisterPage";
 import AddNewProject from "./AddNewProject";
 
 import AddNewClient from "./AddNewClient";
+import AccountPage from "../Pages/AccountPage";
+import { RequireAuth, RequireRole } from "./RequireAuth";
+import AdminUsersPage from "../Pages/AdminUsersPage";
 
 export function Router() {
   return (
     <Routes>
-      <Route path="/" element={<DashboardPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/client/new" element={<AddNewClient />} />
-      <Route path="/client/:id" element={<ClientDetailPage />} />
-      <Route path="/client/:id/edit" element={<ClientEditPage />} />
-      <Route path="/add-project" element={<AddNewProject />} />
-      <Route path="/project/:id" element={<ProjectDetailPage />} />
-      <Route path="/project/:id/edit" element={<ProjectEditPage />} />
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <DashboardPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <DashboardPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/client/new"
+        element={
+          <RequireRole roles={["ADMIN"]}>
+            <AddNewClient />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/client/:id"
+        element={
+          <RequireRole roles={["ADMIN"]}>
+            <ClientDetailPage />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/client/:id/edit"
+        element={
+          <RequireRole roles={["ADMIN"]}>
+            <ClientEditPage />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/add-project"
+        element={
+          <RequireAuth>
+            <AddNewProject />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/project/:id"
+        element={
+          <RequireAuth>
+            <ProjectDetailPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/project/:id/edit"
+        element={
+          <RequireAuth>
+            <ProjectEditPage />
+          </RequireAuth>
+        }
+      />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route
+        path="/account"
+        element={
+          <RequireAuth>
+            <AccountPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <RequireRole roles={["ADMIN"]}>
+            <AdminUsersPage />
+          </RequireRole>
+        }
+      />
     </Routes>
   );
 }

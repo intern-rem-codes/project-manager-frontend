@@ -4,6 +4,7 @@ import { deleteProject, fetchProject } from "../api/projects.api";
 import type { Project } from "../Interfaces/Project";
 import { fetchClient } from "../api/clients.api";
 import type { Client } from "../Interfaces/Client";
+import { readStoredUser } from "../utils/auth";
 
 export default function ProjectDetailPage() {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | undefined>(undefined);
   const [client, setClient] = useState<Client | undefined>(undefined);
   const [error, setError] = useState<string>("");
+  const user = readStoredUser();
+  const isAdmin = user?.role === "ADMIN";
 
   useEffect(() => {
     if (!projectId) return;
@@ -19,7 +22,7 @@ export default function ProjectDetailPage() {
       .then((project) => {
         if (!project) return;
         setProject(project);
-
+        if (!isAdmin) return;
         return fetchClient(project.clientId);
       })
       .then((client) => {
@@ -28,7 +31,7 @@ export default function ProjectDetailPage() {
         setClient(client);
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Laden mislukt"));
-  }, [projectId]);
+  }, [projectId, isAdmin]);
 
   async function handleDelete() {
     if (!projectId) return;
@@ -82,17 +85,19 @@ export default function ProjectDetailPage() {
         </button>
       </div>
 
-      <div className="project-detail-card">
-        <p>
-          <strong>Naam klant:</strong> {client?.firstName} {client?.lastName}
-        </p>
-        <p>
-          <strong>Email:</strong> {client?.email}
-        </p>
-        <p>
-          <strong>Telefoon:</strong> {client?.phone}
-        </p>
-      </div>
+      {isAdmin ? (
+        <div className="project-detail-card">
+          <p>
+            <strong>Naam klant:</strong> {client?.firstName} {client?.lastName}
+          </p>
+          <p>
+            <strong>Email:</strong> {client?.email}
+          </p>
+          <p>
+            <strong>Telefoon:</strong> {client?.phone}
+          </p>
+        </div>
+      ) : null}
 
       <button onClick={() => navigate("/dashboard")}>
         Terug naar dashboard

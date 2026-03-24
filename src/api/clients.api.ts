@@ -4,13 +4,13 @@ import { getData, postData, putData, deleteData } from "./helpers";
 
 // FETCH SINGLE PROJECT
 export async function fetchClient(
-  clientId: string,
+  clientId: string | number,
 ): Promise<Client | undefined> {
   if (!clientId) {
     console.log("no project id provided");
     return undefined;
   }
-  return await getData<Client>(`${baseUrl}/clients/${clientId}`);
+  return await getData<Client>(`${baseUrl}/clients/${String(clientId)}`);
 }
 
 // FETCH ALL PROJECTS
@@ -30,7 +30,7 @@ export async function createClient(input: {
   lastName: string;
   email: string;
   phone: string;
-  dateOfBirth: Date;
+  dateOfBirth: string | null;
   street: string;
   city: string;
   postalCode: string;
@@ -41,25 +41,27 @@ export async function createClient(input: {
 
 // UPDATE PROJECT
 export async function updateClient(
-  clientId: string,
+  clientId: string | number,
   input: {
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
-    dateOfBirth: Date;
+    dateOfBirth: string | null;
     street: string;
     city: string;
     postalCode: string;
     country: string;
   },
 ): Promise<Client | undefined> {
-  return await putData(`${baseUrl}/clients/${clientId}`, input);
+  return await putData(`${baseUrl}/clients/${String(clientId)}`, input);
 }
 
 // DELETE CLIENT
 export async function deleteClient(
-  clientId: string,
-): Promise<Client | undefined> {
-  return await deleteData<Client>(`${baseUrl}/clients/${clientId}`);
+  clientId: string | number,
+): Promise<{ message: string } | undefined> {
+  return await deleteData<{ message: string }>(
+    `${baseUrl}/clients/${String(clientId)}`,
+  );
 }

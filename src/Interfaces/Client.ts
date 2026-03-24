@@ -4,7 +4,7 @@ export type Client = {
   lastName: string;
   email: string;
   phone?: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: string | null;
   street?: string;
   city?: string;
   postalCode?: string;

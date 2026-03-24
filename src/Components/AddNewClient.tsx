@@ -35,7 +35,7 @@ export default function AddNewClient() {
         lastName,
         email,
         phone,
-        dateOfBirth: new Date(dateOfBirth),
+        dateOfBirth: dateOfBirth ? dateOfBirth : null,
         street,
         city,
         postalCode,

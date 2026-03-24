@@ -1,10 +1,10 @@
 export type Project = {
-  id: string;
+  id: number;
   name: string;
   description: string;
   status: string;
-  deadline: string | null;
+  deadline: string;
   created_at: string;
   updated_at: string;
-  clientId: string;
+  clientId: number;
 };

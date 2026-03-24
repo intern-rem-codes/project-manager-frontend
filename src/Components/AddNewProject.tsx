@@ -5,6 +5,7 @@ import { createProject } from "../api/projects.api";
 import { fetchClients } from "../api/clients.api";
 import type { Client } from "../Interfaces/Client";
 import ClientCombobox from "./ClientCombobox";
+import { readStoredUser } from "../utils/auth";
 
 type AddProjectDraft = Partial<{
   name: string;
@@ -37,6 +38,8 @@ function readClientIdFromUrl(): string {
 export default function AddNewProject() {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = readStoredUser();
+  const isAdmin = user?.role === "ADMIN";
   const initial = useMemo(() => {
     return {
       draft: readAddProjectDraft(),
@@ -80,16 +83,17 @@ export default function AddNewProject() {
   }, [name, description, status, deadline, clientId]);
 
   useEffect(() => {
+    if (!isAdmin) return;
     fetchClients()
       .then((fetchedClients) => {
         setClients(fetchedClients ?? []);
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Laden mislukt"));
-  }, []);
+  }, [isAdmin]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!name || !description || !status || !deadline || !clientId) {
+    if (!name || !description || !status || !deadline || (isAdmin && !clientId)) {
       setError("Vul alle velden in.");
       return;
     }
@@ -100,7 +104,7 @@ export default function AddNewProject() {
       description,
       status,
       deadline,
-      clientId,
+      ...(isAdmin ? { clientId } : {}),
     });
     if (!project) {
       setError("Project aanmaken mislukt");
@@ -168,18 +172,20 @@ export default function AddNewProject() {
           />
         </div>
 
-        <ClientCombobox
-          label="Klant:"
-          clients={clients}
-          value={clientId}
-          onChange={setClientId}
-          placeholder="Zoek of selecteer een klant…"
-          onAddNew={() => {
-            const returnTo = `${location.pathname}${location.search}`;
-            navigate(`/client/new?returnTo=${encodeURIComponent(returnTo)}`);
-          }}
-          disabled={isSaving}
-        />
+        {isAdmin ? (
+          <ClientCombobox
+            label="Klant:"
+            clients={clients}
+            value={clientId}
+            onChange={setClientId}
+            placeholder="Zoek of selecteer een klant…"
+            onAddNew={() => {
+              const returnTo = `${location.pathname}${location.search}`;
+              navigate(`/client/new?returnTo=${encodeURIComponent(returnTo)}`);
+            }}
+            disabled={isSaving}
+          />
+        ) : null}
 
         <div className="project-edit-actions">
           <button type="submit" disabled={isSaving}>

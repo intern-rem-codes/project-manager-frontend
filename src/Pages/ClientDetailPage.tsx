@@ -12,7 +12,7 @@ export default function ClientDetailPage() {
   const [error, setError] = useState<string>("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [linkedProjectCount, setLinkedProjectCount] = useState(0);
-  const [linkedProjectIds, setLinkedProjectIds] = useState<string[]>([]);
+  const [linkedProjectIds, setLinkedProjectIds] = useState<number[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   console.log(clientId);
   useEffect(() => {

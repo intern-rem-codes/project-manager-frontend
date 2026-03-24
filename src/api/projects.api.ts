@@ -4,13 +4,13 @@ import { deleteData, getData, postData, putData } from "./helpers";
 
 // FETCH SINGLE PROJECT
 export async function fetchProject(
-  projectId?: string,
+  projectId?: string | number,
 ): Promise<Project | undefined> {
   if (!projectId) {
     console.log("no project id provided");
     return undefined;
   }
-  return await getData<Project>(`${baseUrl}/projects/${projectId}`);
+  return await getData<Project>(`${baseUrl}/projects/${String(projectId)}`);
 }
 
 // FETCH ALL PROJECTS
@@ -30,14 +30,14 @@ export async function createProject(input: {
   description: string;
   status: string;
   deadline: string;
-  clientId: string;
+  clientId?: string | number;
 }): Promise<Project | undefined> {
   return await postData(`${baseUrl}/projects`, input);
 }
 
 // UPDATE PROJECT
 export async function updateProject(
-  projectId: string,
+  projectId: string | number,
   input: {
     name: string;
     description: string;
@@ -45,12 +45,12 @@ export async function updateProject(
     deadline: string;
   },
 ): Promise<Project | undefined> {
-  return await putData(`${baseUrl}/projects/${projectId}`, input);
+  return await putData(`${baseUrl}/projects/${String(projectId)}`, input);
 }
 
 // DELETE PROJECT
 export async function deleteProject(
-  projectId: string,
+  projectId: string | number,
 ): Promise<Project | undefined> {
-  return await deleteData<Project>(`${baseUrl}/projects/${projectId}`);
+  return await deleteData<Project>(`${baseUrl}/projects/${String(projectId)}`);
 }
