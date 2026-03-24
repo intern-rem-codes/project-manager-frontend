@@ -5,6 +5,7 @@ import type { Project } from "../Interfaces/Project";
 import { fetchClient } from "../api/clients.api";
 import type { Client } from "../Interfaces/Client";
 import { readStoredUser } from "../utils/auth";
+import ProjectFiles from "../Components/ProjectFiles";
 
 export default function ProjectDetailPage() {
   const navigate = useNavigate();
@@ -99,9 +100,11 @@ export default function ProjectDetailPage() {
         </div>
       ) : null}
 
-      <button onClick={() => navigate("/dashboard")}>
-        Terug naar dashboard
-      </button>
+      <div className="project-detail-card">
+        <ProjectFiles />
+      </div>
+
+      <button onClick={() => navigate("/projects")}>Terug naar projecten</button>
     </div>
   );
 }

@@ -12,6 +12,8 @@ import AddNewClient from "./AddNewClient";
 import AccountPage from "../Pages/AccountPage";
 import { RequireAuth, RequireRole } from "./RequireAuth";
 import AdminUsersPage from "../Pages/AdminUsersPage";
+import ProjectsPage from "../Pages/ProjectsPage";
+import ClientsPage from "../Pages/ClientsPage";
 
 export function Router() {
   return (
@@ -62,6 +64,22 @@ export function Router() {
           <RequireAuth>
             <AddNewProject />
           </RequireAuth>
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          <RequireAuth>
+            <ProjectsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/clients"
+        element={
+          <RequireRole roles={["ADMIN"]}>
+            <ClientsPage />
+          </RequireRole>
         }
       />
       <Route

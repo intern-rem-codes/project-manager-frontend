@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { fetchClients } from "../api/clients.api";
 import { fetchProjects } from "../api/projects.api";
-import type { Client } from "../Interfaces/Client";
 import type { Project } from "../Interfaces/Project";
 import { clearAuth, readStoredUser, roleLabel } from "../utils/auth";
 
@@ -65,8 +63,6 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[] | undefined>(undefined);
   const [error, setError] = useState<string>("");
-  const [clients, setClients] = useState<Client[] | undefined>(undefined);
-  const [clientsError, setClientsError] = useState<string>("");
   const [accountOpen, setAccountOpen] = useState(false);
   const user = readStoredUser();
   const roleText = user ? roleLabel(user.role) : "";
@@ -75,7 +71,7 @@ export default function DashboardPage() {
     const list = projects ?? [];
     const today = new Date();
 
-    let total = list.length;
+    const total = list.length;
     let active = 0;
     let done = 0;
     let onHold = 0;
@@ -93,7 +89,7 @@ export default function DashboardPage() {
         onHold += 1;
       } else if (overdueFlag) {
         overdue += 1;
-      } else if (key === "active") {
+      } else {
         active += 1;
       }
     }
@@ -116,21 +112,6 @@ export default function DashboardPage() {
         );
       });
   }, []);
-
-  useEffect(() => {
-    if (!isAdmin) return;
-    fetchClients()
-      .then((data) => {
-        setClientsError("");
-        setClients(data);
-      })
-      .catch((e) => {
-        setClients([]);
-        setClientsError(
-          e instanceof Error ? e.message : "Kan klanten niet laden.",
-        );
-      });
-  }, [isAdmin]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -157,123 +138,142 @@ export default function DashboardPage() {
     navigate("/login");
   }
 
+  function openAccount() {
+    setAccountOpen(false);
+    navigate("/account");
+  }
+
+  function openAdmin() {
+    setAccountOpen(false);
+    navigate("/admin/users");
+  }
+
+  function logoutFromMenu() {
+    setAccountOpen(false);
+    logout();
+  }
+
   return (
     <div className="dashboard-page">
       <header className="app-header">
         <div className="app-header-inner">
-          <div className="app-header-title">
-            <div className="brand" onClick={() => navigate("/dashboard")}>
-              <span className="brand-icon" aria-hidden="true">
-                <svg
-                  viewBox="0 0 24 24"
-                  width="22"
-                  height="22"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3 6.5c0-1.38 1.12-2.5 2.5-2.5h4.1c.66 0 1.29.26 1.76.73l.8.8c.28.28.66.44 1.06.44H18.5C19.88 6 21 7.12 21 8.5v9c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 20 3 18.88 3 17.5v-11Z"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <strong className="brand-text">Projectbeheer</strong>
-            </div>
-          </div>
-
-          <div className="app-header-actions" data-account-menu>
-            {user ? (
-              <button
-                type="button"
-                className="user-chip"
-                onClick={() => setAccountOpen((v) => !v)}
-              >
-                <span className="account-avatar" aria-hidden="true">
-                  {getInitials(user.name || user.email)}
-                </span>
-                <span className="user-chip__text">
-                  <span className="user-chip__name">{user.name}</span>
-                  <span className="user-chip__role">{roleText}</span>
-                </span>
-                <span
-                  className={`user-chip__chevron ${
-                    accountOpen ? "user-chip__chevron--open" : ""
-                  }`}
-                  aria-hidden="true"
-                >
+          <div className="app-header-row">
+            <div className="app-header-title">
+              <div className="brand" onClick={() => navigate("/dashboard")}>
+                <span className="brand-icon" aria-hidden="true">
                   <svg
                     viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
+                    width="22"
+                    height="22"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M7 10l5 5 5-5"
+                      d="M3 6.5c0-1.38 1.12-2.5 2.5-2.5h4.1c.66 0 1.29.26 1.76.73l.8.8c.28.28.66.44 1.06.44H18.5C19.88 6 21 7.12 21 8.5v9c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 20 3 18.88 3 17.5v-11Z"
                       stroke="currentColor"
                       strokeWidth="1.8"
-                      strokeLinecap="round"
                       strokeLinejoin="round"
                     />
                   </svg>
                 </span>
-              </button>
-            ) : (
-              <button type="button" onClick={() => navigate("/login")}>
-                Inloggen
-              </button>
-            )}
+                <strong className="brand-text">Projectbeheer</strong>
+              </div>
+            </div>
 
-            {user ? (
-              <>
+            <div className="app-header-actions" data-account-menu>
+              {user ? (
                 <button
                   type="button"
-                  className="button-secondary header-pill"
-                  onClick={() => navigate("/account")}
+                  className="user-chip"
+                  onClick={() => setAccountOpen((v) => !v)}
+                  aria-expanded={accountOpen}
                 >
-                  Account
-                </button>
-                {isAdmin ? (
-                  <button
-                    type="button"
-                    className="button-secondary header-pill"
-                    onClick={() => navigate("/admin/users")}
+                  <span className="account-avatar" aria-hidden="true">
+                    {getInitials(user.name || user.email)}
+                  </span>
+                  <span className="user-chip__text">
+                    <span className="user-chip__name">{user.name}</span>
+                    <span className="user-chip__role">{roleText}</span>
+                  </span>
+                  <span
+                    className={`user-chip__chevron ${
+                      accountOpen ? "user-chip__chevron--open" : ""
+                    }`}
+                    aria-hidden="true"
                   >
-                    Admin
-                  </button>
-                ) : null}
-                <button
-                  type="button"
-                  className="button-secondary header-pill"
-                  onClick={logout}
-                >
-                  Uitloggen
-                </button>
-              </>
-            ) : null}
-
-            {accountOpen && user ? (
-              <div className="account-popover">
-                <div className="account-popover__meta">
-                  <div className="account-popover__identity">
-                    <div
-                      className="account-avatar account-avatar--lg"
-                      aria-hidden="true"
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="18"
+                      height="18"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      {getInitials(user.name || user.email)}
-                    </div>
-                    <div>
-                      <div className="account-popover__name">{user.name}</div>
-                      <div className="account-popover__email">{user.email}</div>
+                      <path
+                        d="M7 10l5 5 5-5"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              ) : (
+                <button type="button" onClick={() => navigate("/login")}>
+                  Inloggen
+                </button>
+              )}
+
+              {accountOpen && user ? (
+                <div className="account-popover">
+                  <div className="account-popover__meta">
+                    <div className="account-popover__identity">
+                      <div
+                        className="account-avatar account-avatar--lg"
+                        aria-hidden="true"
+                      >
+                        {getInitials(user.name || user.email)}
+                      </div>
+                      <div>
+                        <div className="account-popover__name">{user.name}</div>
+                        <div className="account-popover__email">
+                          {user.email}
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  <div className="account-popover__hint">{roleText}</div>
+                  <div className="account-popover__actions">
+                    <button
+                      type="button"
+                      className="account-menu-item"
+                      onClick={openAccount}
+                    >
+                      Account
+                    </button>
+                    {isAdmin ? (
+                      <button
+                        type="button"
+                        className="account-menu-item"
+                        onClick={openAdmin}
+                      >
+                        Admin
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      className="account-menu-item account-menu-item--danger"
+                      onClick={logoutFromMenu}
+                    >
+                      Uitloggen
+                    </button>
+                  </div>
                 </div>
-                <div className="account-popover__hint">{roleText}</div>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
+
+          {/* Overzichten zitten nu op /projects en /clients */}
         </div>
       </header>
 
@@ -286,13 +286,31 @@ export default function DashboardPage() {
           <button onClick={() => navigate("/add-project")}>
             Nieuw project maken
           </button>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() => navigate("/projects")}
+          >
+            Alle projecten
+          </button>
           {isAdmin ? (
-            <button onClick={() => navigate("/client/new")}>
-              Nieuwe klant maken
-            </button>
+            <>
+              <button onClick={() => navigate("/client/new")}>
+                Nieuwe klant maken
+              </button>
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={() => navigate("/clients")}
+              >
+                Alle klanten
+              </button>
+            </>
           ) : null}
         </div>
       </div>
+
+      {error ? <p className="error">{error}</p> : null}
 
       <section className="dashboard-stats" aria-label="Projectstatistieken">
         <div className="stat-card stat-card--brand">
@@ -422,54 +440,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
-
-      <section className="dashboard-section">
-        <h2>Projecten</h2>
-        {error ? <p className="error">{error}</p> : null}
-        {projects ? (
-          <div className="project-list">
-            {projects.length === 0 ? <p>Geen projecten gevonden.</p> : null}
-            {projects.map((project) => (
-              <div key={project.id} className="project-card">
-                <h2>{project.name}</h2>
-                <p>{project.description}</p>
-                <button onClick={() => navigate(`/project/${project.id}`)}>
-                  Bekijk project
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>Projecten laden...</p>
-        )}
-      </section>
-
-      <div className="dashboard-divider" />
-
-      {isAdmin ? (
-        <section className="dashboard-section">
-          <h2>Klanten</h2>
-          {clientsError ? <p className="error">{clientsError}</p> : null}
-          {clients ? (
-            <div className="project-list">
-              {clients.length === 0 ? <p>Geen klanten gevonden.</p> : null}
-              {clients.map((client) => (
-                <div key={client.id} className="project-card">
-                  <h2>
-                    {client.firstName} {client.lastName}
-                  </h2>
-                  <p>{client.email}</p>
-                  <button onClick={() => navigate(`/client/${client.id}`)}>
-                    Bekijk klant
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>Klanten laden...</p>
-          )}
-        </section>
-      ) : null}
     </div>
   );
 }

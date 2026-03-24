@@ -51,9 +51,10 @@ export default function ClientEditPage() {
 
   console.log(isCreateMode);
   async function handleSave() {
+    setIsSaving(true);
     try {
       if (isCreateMode) {
-        await createClient({
+        const created = await createClient({
           firstName,
           lastName,
           email,
@@ -64,9 +65,11 @@ export default function ClientEditPage() {
           postalCode,
           country,
         });
+        if (!created) throw new Error("Klant aanmaken mislukt");
+        navigate(`/client/${created.id}`);
       } else {
         if (!clientId) return;
-        await updateClient(clientId, {
+        const updated = await updateClient(clientId, {
           firstName,
           lastName,
           email,
@@ -77,11 +80,12 @@ export default function ClientEditPage() {
           postalCode,
           country,
         });
+        if (!updated) throw new Error("Klant opslaan mislukt");
+        navigate(`/client/${updated.id}`);
       }
-      navigate(`/client/${clientId}`);
     } catch (error) {
       setPageError(
-        error instanceof Error ? error.message : "Project bijwerken mislukt",
+        error instanceof Error ? error.message : "Klant bijwerken mislukt",
       );
     } finally {
       setIsSaving(false);

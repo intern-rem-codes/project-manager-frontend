@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { deleteClient, fetchClient } from "../api/clients.api";
 import type { Client } from "../Interfaces/Client";
 import { deleteProject, fetchProjects } from "../api/projects.api";
+import type { Project } from "../Interfaces/Project";
 import ConfirmModal from "../Components/ConfirmModal";
 
 export default function ClientDetailPage() {
@@ -10,6 +11,8 @@ export default function ClientDetailPage() {
   const { id: clientId } = useParams();
   const [client, setClient] = useState<Client | undefined>(undefined);
   const [error, setError] = useState<string>("");
+  const [projects, setProjects] = useState<Project[] | null>(null);
+  const [projectsError, setProjectsError] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [linkedProjectCount, setLinkedProjectCount] = useState(0);
   const [linkedProjectIds, setLinkedProjectIds] = useState<number[]>([]);
@@ -17,12 +20,24 @@ export default function ClientDetailPage() {
   console.log(clientId);
   useEffect(() => {
     if (!clientId) return;
+    setProjects(null);
+    setProjectsError("");
     fetchClient(clientId)
-      .then((data) => {
+      .then(async (data) => {
         setError("");
         setClient(data);
+        const list = await fetchProjects();
+        setProjectsError("");
+        const linked = (list ?? []).filter(
+          (project) => String(project.clientId) === String(clientId),
+        );
+        setProjects(linked);
       })
-      .catch((e) => setError(e instanceof Error ? e.message : "Laden mislukt"));
+      .catch((e) => {
+        setProjects([]);
+        setError(e instanceof Error ? e.message : "Laden mislukt");
+        setProjectsError("Projecten laden mislukt.");
+      });
   }, [clientId]);
 
   async function openDeleteModal() {
@@ -52,7 +67,9 @@ export default function ClientDetailPage() {
         const results = await Promise.allSettled(
           linkedProjectIds.map((projectId) => deleteProject(projectId)),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         if (failedCount > 0) {
           setError(
             `Verwijderen mislukt: ${failedCount} gekoppelde project(en) konden niet verwijderd worden. Verwijder of koppel de projecten eerst los en probeer opnieuw.`,
@@ -132,9 +149,38 @@ export default function ClientDetailPage() {
         </button>
       </div>
 
-      <button onClick={() => navigate("/dashboard")}>
-        Terug naar dashboard
-      </button>
+      <div className="dashboard-section">
+        <h2>Gekoppelde projecten</h2>
+        {projectsError ? <p className="error">{projectsError}</p> : null}
+        {projects === null ? (
+          <p>Laden...</p>
+        ) : projects.length === 0 ? (
+          <p>Geen gekoppelde projecten.</p>
+        ) : (
+          <div className="project-list">
+            {projects.map((project) => (
+              <div key={project.id} className="project-card">
+                <h2>{project.name}</h2>
+                <p>{project.description}</p>
+                <p>
+                  <strong>Status:</strong> {project.status}
+                </p>
+                <p>
+                  <strong>Deadline:</strong>{" "}
+                  {project.deadline
+                    ? new Date(project.deadline).toLocaleDateString()
+                    : "-"}
+                </p>
+                <button onClick={() => navigate(`/project/${project.id}`)}>
+                  Bekijk project
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button onClick={() => navigate("/clients")}>Terug naar klanten</button>
     </div>
   );
 }

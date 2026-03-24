@@ -79,12 +79,16 @@ export default function ProjectEditPage() {
 
         <div className="form-group">
           <label>Status:</label>
-          <input
-            type="text"
+          <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
             required
-          />
+          >
+            <option value="Actief">Actief</option>
+            <option value="Afgerond">Afgerond</option>
+            <option value="On-hold">On-hold</option>
+            <option value="Verlopen">Verlopen</option>
+          </select>
         </div>
 
         <div className="form-group">
